@@ -65,11 +65,19 @@ class ApplicationTest(unittest.TestCase):
 
         self.execute("quit")
 
-    #def test_can_add_deadline(self):
-    #    self.execute("add project secrets")
-    #    self.execute("add task secrets Do the thing.")
-    #    self.execute("deadline 1 2024-02-14")
-    #    self.execute("quit")
+    def test_today_shows_task_with_deadline_today(self):
+        self.execute("add project todos")
+        self.execute("add task todos Do the thing.")
+        self.execute("deadline 1 2024-02-14")
+        self.execute("today")
+        
+        self.read_lines(
+            "todos",
+            "  [ ] 1: Do the thing.",
+            ""
+        )
+
+        self.execute("quit")
 
     def execute(self, command):
         self.write(command + "\n")
