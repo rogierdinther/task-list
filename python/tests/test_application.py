@@ -1,6 +1,7 @@
 import subprocess
 import unittest
 from threading import Timer
+from datetime import datetime
 
 
 class ApplicationTest(unittest.TestCase):
@@ -65,11 +66,10 @@ class ApplicationTest(unittest.TestCase):
 
         self.execute("quit")
 
-    '''
     def test_today_shows_task_with_deadline_today(self):
         self.execute("add project todos")
         self.execute("add task todos Do the thing.")
-        self.execute("deadline 1 2024-02-14")
+        self.execute(f"deadline 1 {self.todays_date()}")
         self.execute("today")
         
         self.read_lines(
@@ -79,8 +79,19 @@ class ApplicationTest(unittest.TestCase):
         )
 
         self.execute("quit")
-    '''
 
+    def test_today_shows_no_taks_if_none_are_today(self):
+        self.execute("today")
+        self.read_lines("Nothing to do",
+                        "") 
+
+    def test_today_does_not_show_task_without_deadline(self):
+        self.execute("add project todos")
+        self.execute("add task todos Do the thing any time")
+        self.execute("today")
+        self.read_lines("Nothing to do", "")
+
+    #Test helpers
     def execute(self, command):
         self.write(command + "\n")
 
@@ -96,3 +107,6 @@ class ApplicationTest(unittest.TestCase):
     def read_lines(self, *lines):
         for line in lines:
             self.read(line + "\n")
+
+    def todays_date(self):
+        return str(datetime.now().strftime('%Y-%m-%d'))

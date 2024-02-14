@@ -5,6 +5,7 @@ class Task:
         self.id = id_
         self.description = description
         self.done = done
+        self.has_deadline = False
 
     def set_done(self, done: bool) -> None:
         self.done = done
