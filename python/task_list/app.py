@@ -1,20 +1,21 @@
+from datetime import datetime
 from typing import Dict, List
 
 from task_list.console import Console
 from task_list.task import Task
-from task_list.command import Command
+from task_list.command import Command, DeadlineCommand, create_command, TodayCommand
 
 class TaskCollection:
     def __init__(self):
         self.tasks: Dict[str, List[Task]] = dict()
 
-    def get_tasks_with_deadline(self):
-        tasks_with_deadline: Dict[str, List[Task]] = dict()
+    def get_tasks_for_deadline(self, deadline: datetime):
+        tasks: Dict[str, List[Task]] = dict()
         for project, task_list in self.tasks.items():
-            task_list_with_deadline = [t for t in task_list if t.has_deadline]
-            if (task_list_with_deadline):
-                tasks_with_deadline[project] = task_list_with_deadline
-        return tasks_with_deadline
+            task_list_for_deadline = [t for t in task_list if t.get_deadline() == deadline]
+            if (task_list_for_deadline):
+                tasks[project] = task_list_for_deadline
+        return tasks
 
     def get_task(self, id):
         for project, task_list in self.tasks.items():
@@ -37,19 +38,19 @@ class TaskList:
             if inputString == self.QUIT:
                 break
 
-            command = Command(inputString)
+            command = create_command(inputString)
 
             self.execute(command)
 
     def execute(self, command: Command) -> None:
-        if command.name == "show":
+        if isinstance(command, DeadlineCommand):
+            self.deadline(command)
+        elif isinstance(command, TodayCommand):
+            self.today()
+        elif command.name == "show":
             self.show()
         elif command.name == "add":
             self.add(command.argumentString)
-        elif command.name == "deadline":
-            self.deadline(command.argumentString)
-        elif command.name == "today":
-            self.today()
         elif command.name == "check":
             self.check(command.argumentString)
         elif command.name == "uncheck":
@@ -60,7 +61,8 @@ class TaskList:
             self.error(command.name)
 
     def today(self):
-        tasks_with_deadline = self.task_collection.get_tasks_with_deadline()
+        deadline = datetime.now().date() 
+        tasks_with_deadline = self.task_collection.get_tasks_for_deadline(deadline)
         if len(tasks_with_deadline.items()) == 0:
             self.console.print("Nothing to do")
             self.console.print("")
@@ -85,10 +87,9 @@ class TaskList:
             project_task = sub_command_rest[1].split(" ", 1)
             self.add_task(project_task[0], project_task[1])
 
-    def deadline(self, argumentString: str):
-        id = int(argumentString.split(" ")[0])
-        task = self.task_collection.get_task(id)
-        task.has_deadline = True
+    def deadline(self, command: DeadlineCommand):
+        task = self.task_collection.get_task(command.task_id)
+        task.deadline = command.date
 
     def add_project(self, name: str) -> None:
         self.task_collection.tasks[name] = []
@@ -99,7 +100,7 @@ class TaskList:
             self.console.print(f"Could not find a project with the name {project}.")
             self.console.print()
             return
-        project_tasks.append(Task(self.next_id(), description, False))
+        project_tasks.append(Task(self.next_id(), description, False, None))
 
     def check(self, id_string: str) -> None:
         self.set_done(id_string, True)
