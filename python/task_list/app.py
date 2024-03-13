@@ -52,16 +52,14 @@ class TaskList:
     def execute(self, command: Command) -> None:
         if isinstance(command, DeadlineCommand):
             self.deadline(command)
-        # elif isinstance(command, DeleteCommand):
-        #     self.delete(command)
+        elif isinstance(command, DeleteCommand):
+            self.delete(command)
         elif isinstance(command, TodayCommand):
             self.today()
         elif command.name == "show":
             self.show()
         elif command.name == "add":
             self.add(command.argumentString)
-        elif command.name == "delete":
-            self.delete(command.argumentString)
         elif command.name == "check":
             self.check(command.argumentString)
         elif command.name == "uncheck":
@@ -98,10 +96,8 @@ class TaskList:
             project_task = sub_command_rest[1].split(" ", 1)
             self.add_task(project_task[0], project_task[1])
 
-    # def delete(self, command: DeleteCommand) -> None:
-        # self.task_collection.delete_task(command.task_id)
-    def delete(self, command_line: str) -> None:
-        self.task_collection.delete_task(int(command_line))
+    def delete(self, command: DeleteCommand) -> None:
+        self.task_collection.delete_task(command.task_id)
 
     def deadline(self, command: DeadlineCommand):
         task = self.task_collection.get_task(command.task_id)

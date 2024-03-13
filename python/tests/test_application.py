@@ -103,8 +103,7 @@ class ApplicationTest(unittest.TestCase):
         self.execute("add task todos Do something")
         self.execute("delete 1")
         self.execute("show")
-        self.read_lines("todos",
-                        "")
+        self.read_lines("todos", "")
 
     #Test helpers
     def execute(self, command):

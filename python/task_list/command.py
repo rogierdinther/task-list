@@ -20,7 +20,7 @@ class DeadlineCommand:
 class DeleteCommand:
     def __init__(self, argument_string: str):
         parts = argument_string.split(" ")
-        self.task_id = int(parts[0])
+        self.task_id = int(parts[1])
 
 
 class TodayCommand:
@@ -33,8 +33,8 @@ def create_command(inputString: str) -> Command:
     name = parts[0]
     if (name == "today"):
         return TodayCommand()
-    # elif(name == "delete"):
-    #     return DeleteCommand(inputString)
+    elif(name == "delete"):
+        return DeleteCommand(inputString)
     elif (name != "deadline"):
         return Command(inputString)
     else:
