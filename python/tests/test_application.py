@@ -98,6 +98,13 @@ class ApplicationTest(unittest.TestCase):
         self.execute("today")
         self.read_lines("Nothing to do", "")
 
+    def test_a_deleted_task_does_not_show_up(self):
+        self.execute("add project todos")
+        self.execute("add task todos Do something")
+        self.execute("delete 1")
+        self.execute("show")
+        self.read_lines("todos",
+                        "")
 
     #Test helpers
     def execute(self, command):

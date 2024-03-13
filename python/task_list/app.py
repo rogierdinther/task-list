@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from task_list.console import Console
 from task_list.task import Task
-from task_list.command import Command, DeadlineCommand, create_command, TodayCommand
+from task_list.command import Command, DeadlineCommand, create_command, TodayCommand, DeleteCommand
 
 class TaskCollection:
     def __init__(self):
@@ -23,6 +23,13 @@ class TaskCollection:
                 if task.id == id:
                     return task
         return None
+    
+    def delete_task(self, id: int) -> None:
+        for project, task_list in self.tasks.items():
+            for task in task_list:
+                if task.id == id:
+                    task_list.remove(task)
+        return
 
 class TaskList:
     QUIT = "quit"
@@ -45,12 +52,16 @@ class TaskList:
     def execute(self, command: Command) -> None:
         if isinstance(command, DeadlineCommand):
             self.deadline(command)
+        # elif isinstance(command, DeleteCommand):
+        #     self.delete(command)
         elif isinstance(command, TodayCommand):
             self.today()
         elif command.name == "show":
             self.show()
         elif command.name == "add":
             self.add(command.argumentString)
+        elif command.name == "delete":
+            self.delete(command.argumentString)
         elif command.name == "check":
             self.check(command.argumentString)
         elif command.name == "uncheck":
@@ -86,6 +97,11 @@ class TaskList:
         elif sub_command == "task":
             project_task = sub_command_rest[1].split(" ", 1)
             self.add_task(project_task[0], project_task[1])
+
+    # def delete(self, command: DeleteCommand) -> None:
+        # self.task_collection.delete_task(command.task_id)
+    def delete(self, command_line: str) -> None:
+        self.task_collection.delete_task(int(command_line))
 
     def deadline(self, command: DeadlineCommand):
         task = self.task_collection.get_task(command.task_id)

@@ -17,6 +17,11 @@ class DeadlineCommand:
         self.task_id = int(parts[0])
         self.date = datetime.strptime(parts[1], "%Y-%m-%d").date()
 
+class DeleteCommand:
+    def __init__(self, argument_string: str):
+        parts = argument_string.split(" ")
+        self.task_id = int(parts[0])
+
 
 class TodayCommand:
     def __init__(self) -> None:
@@ -28,6 +33,8 @@ def create_command(inputString: str) -> Command:
     name = parts[0]
     if (name == "today"):
         return TodayCommand()
+    # elif(name == "delete"):
+    #     return DeleteCommand(inputString)
     elif (name != "deadline"):
         return Command(inputString)
     else:
