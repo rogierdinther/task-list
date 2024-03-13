@@ -81,11 +81,16 @@ class TaskList:
             self.console.print("")
 
     def show(self) -> None:
+        if not self.task_collection.tasks:
+            self.console.print("Nothing to do")
+            self.console.print("")
+            return
         for project, tasks in self.task_collection.tasks.items():
             self.console.print(project)
             for task in tasks:
                 self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.id}: {task.description}")
             self.console.print()
+
 
     def add(self, command_line: str) -> None:
         sub_command_rest = command_line.split(" ", 1)

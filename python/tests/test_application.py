@@ -25,6 +25,7 @@ class ApplicationTest(unittest.TestCase):
 
     def test_it_works(self):
         self.execute("show")
+        self.read_lines("Nothing to do","")
         self.execute("add project secrets")
         self.execute("add task secrets Eat more donuts.")
         self.execute("add task secrets Destroy all humans.")
@@ -104,6 +105,11 @@ class ApplicationTest(unittest.TestCase):
         self.execute("delete 1")
         self.execute("show")
         self.read_lines("todos", "")
+
+    def test_delete_task_on_no_project(self):
+        self.execute("delete 1")
+        self.execute("show")
+        self.read_lines("Nothing to do", "")
 
     #Test helpers
     def execute(self, command):
